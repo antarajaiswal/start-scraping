@@ -1,0 +1,96 @@
+
+# Antara Jaiswal 
+# GRIP FEB 2022 batch
+#Task no 1 - Prediction of the student score using Supervised  ML ( given the test score )
+
+# import the  libraries pandas - for dataframe , numpy - for numerical calculation , plt and sns for data visualisation 
+
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+#Redding the dataset. 
+
+url='https://raw.githubusercontent.com/AdiPersonalWorks/Random/master/student_scores%20-%20student_scores.csv'
+data=pd.read_csv(url)
+
+#Exploring the data  (subset of the database)
+
+data.head()
+
+
+# checking for the null values 
+
+data.isnull().sum()
+
+#checking for the number  of row and columns 
+
+data.shape
+
+#checking for the datatypes of each variable 
+
+data.dtypes
+
+# get the information about the database 
+
+data.info()
+
+#description about some statistical measures  about the dataset 
+
+data.describe()
+
+#draw the scatter plot.  which show the relationship between the x (independent) variable  and the y (dependent)  variable 
+
+data.plot(kind='scatter',x='Hours',y='Scores');
+plt.show()
+
+# there is a positive linear relation between the number of hours studied and percentage of score.
+
+data.plot(x='Hours', y='Scores', style ='o')  
+plt.title('HOURS VS PERCENTAGE SCORE')  
+plt.xlabel('Hours Studied')  
+plt.ylabel('Percentage Score')  
+plt.grid()
+plt.show()
+
+#calculate the correlation. correlation close to 1 . positive correlation.  x and y are positively linearly related. 
+
+data.corr(method='pearson')
+
+#x variable n y variable. 
+
+hours=data['Hours']
+scores=data['Scores']
+
+#Linear Regression
+
+
+#Preparing the data . Divide the data into "attributes" (inputs) and "labels" (outputs).
+
+X= data.iloc[:, :-1].values
+y= data.iloc[:,1].values 
+
+
+#Next step is to split this data into training and test sets by using Scikit-Learn's built-in train_test_split() method:
+
+from sklearn.model_selection import train_test_split
+X_train,X_test,y_train,y_test=train_test_split(X, y, test_size=0.2, random_state=50)
+
+
+#Training the Algorithm
+
+from sklearn.linear_model import LinearRegression
+reg=LinearRegression()
+reg.fit(X_train,y_train)
+
+
+# draw the difference between the actual and predicted values. the histogram distribution plot is close to 0. 
+#dataset is fitted well because it is between -5 and 5. 
+
+sns.set_style('whitegrid')
+sns.distplot(np.array(y_test-y_pred))
+plt.show()
+
+
+print('R2 score:',r2_score(y_test,y_pred))
