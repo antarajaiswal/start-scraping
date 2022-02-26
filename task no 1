@@ -1,7 +1,7 @@
-
 # Antara Jaiswal 
 # GRIP FEB 2022 batch
 #Task no 1 - Prediction of the student score using Supervised  ML ( given the test score )
+
 
 # import the  libraries pandas - for dataframe , numpy - for numerical calculation , plt and sns for data visualisation 
 
@@ -10,40 +10,90 @@ import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
 
-#Redding the dataset. 
+
+#Reading the dataset. 
 
 url='https://raw.githubusercontent.com/AdiPersonalWorks/Random/master/student_scores%20-%20student_scores.csv'
 data=pd.read_csv(url)
-
+ 
+ 
+ 
+#explanatory data analysis
 #Exploring the data  (subset of the database)
 
 data.head()
 
-
+Hours	Scores
+0	2.5	21
+1	5.1	47
+2	3.2	27
+3	8.5	75
+4	3.5	30
+ 
+ 
+ 
 # checking for the null values 
 
 data.isnull().sum()
+
+
+Hours     0
+Scores    0
+dtype: int64
 
 #checking for the number  of row and columns 
 
 data.shape
 
+(25, 2)
+
+
 #checking for the datatypes of each variable 
 
 data.dtypes
+
+
+Hours     float64
+Scores      int64
+dtype: object
 
 # get the information about the database 
 
 data.info()
 
+<class 'pandas.core.frame.DataFrame'>
+RangeIndex: 25 entries, 0 to 24
+Data columns (total 2 columns):
+ #   Column  Non-Null Count  Dtype  
+---  ------  --------------  -----  
+ 0   Hours   25 non-null     float64
+ 1   Scores  25 non-null     int64  
+dtypes: float64(1), int64(1)
+memory usage: 528.0 bytes
+
+
+
 #description about some statistical measures  about the dataset 
 
 data.describe()
+
+
+Hours	Scores
+count	25.000000	25.000000
+mean	5.012000	51.480000
+std	2.525094	25.286887
+min	1.100000	17.000000
+25%	2.700000	30.000000
+50%	4.800000	47.000000
+75%	7.400000	75.000000
+max	9.200000	95.000000
+
 
 #draw the scatter plot.  which show the relationship between the x (independent) variable  and the y (dependent)  variable 
 
 data.plot(kind='scatter',x='Hours',y='Scores');
 plt.show()
+
 
 # there is a positive linear relation between the number of hours studied and percentage of score.
 
@@ -54,9 +104,15 @@ plt.ylabel('Percentage Score')
 plt.grid()
 plt.show()
 
+
 #calculate the correlation. correlation close to 1 . positive correlation.  x and y are positively linearly related. 
 
 data.corr(method='pearson')
+
+	Hours	Scores
+Hours	1.000000	0.976191
+Scores	0.976191	1.000000
+
 
 #x variable n y variable. 
 
@@ -69,7 +125,7 @@ scores=data['Scores']
 #Preparing the data . Divide the data into "attributes" (inputs) and "labels" (outputs).
 
 X= data.iloc[:, :-1].values
-y= data.iloc[:,1].values 
+y= data.iloc[:,1].values
 
 
 #Next step is to split this data into training and test sets by using Scikit-Learn's built-in train_test_split() method:
@@ -84,6 +140,22 @@ from sklearn.linear_model import LinearRegression
 reg=LinearRegression()
 reg.fit(X_train,y_train)
 
+# Plotting the regression line for the test data
+
+m=reg.coef_
+c=reg.intercept_
+line=m*X+c
+plt.scatter(X,y)
+plt.plot(X,line);
+plt.show()
+
+
+# Comparing Actual vs Predicted
+
+y_pred=reg.predict(X_test)
+actual_predicted=pd.DataFrame({'Target':y_test,'Predicted':y_pred})
+actual_predicted
+
 
 # draw the difference between the actual and predicted values. the histogram distribution plot is close to 0. 
 #dataset is fitted well because it is between -5 and 5. 
@@ -93,4 +165,40 @@ sns.distplot(np.array(y_test-y_pred))
 plt.show()
 
 
+sns.set_style('whitegrid')
+sns.histplot(np.array(y_test-y_pred))
+plt.show()
+
+
+sns.set_style('whitegrid')
+sns.displot(np.array(y_test-y_pred))
+plt.show()
+
+#What will be predicted score if a student studies for 9.25 hrs/ day?
+
+
+#prediction 
+
+v=9.25
+s=reg.predict([[v]])
+print(s)
+
+
+#prediction 
+
+print("So if a student studies for 9.25 hours a day then he/she gets",s,"% marks in the exam")
+
+So if a student studies for 9.25 hours a day then he/she gets [91.56986604] % marks in the exam
+
+
+#Model Evaluation
+
+
+from sklearn import metrics
+from sklearn.metrics import r2_score
+print("Mean Absolute Error:",metrics.mean_absolute_error(y_test,y_pred))
+Mean Absolute Error: 4.5916495300630285
+
 print('R2 score:',r2_score(y_test,y_pred))
+
+R2 score: 0.971014141329942
